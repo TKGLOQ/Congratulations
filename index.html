@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Congratulations Priyanka on finishing your Final University exam!!</title>
+    <style>
+        /* Basic styling */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            overflow: hidden;
+            color: white;
+            font-family: 'Arial', sans-serif;
+        }
+        h1 {
+            font-size: 48px;
+            animation: color-change 3s infinite;
+        }
+        /* Animation for changing colors */
+        @keyframes color-change {
+            0% { color: red; }
+            25% { color: orange; }
+            50% { color: yellow; }
+            75% { color: green; }
+            100% { color: blue; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Congratulations Person on finishing your exams!</h1>
+    <canvas id="fireworksCanvas"></canvas>
+
+    <script>
+        // Fireworks animation
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let fireworks = [];
+
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function createFirework() {
+            let firework = {
+                x: random(0, canvas.width),
+                y: random(0, canvas.height),
+                size: random(2, 4),
+                color: `hsl(${Math.floor(Math.random() * 360)}, 100%, 50%)`,
+                dx: random(-2, 2),
+                dy: random(-2, 2),
+                life: random(50, 100)
+            };
+            fireworks.push(firework);
+        }
+
+        function updateFireworks() {
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                const f = fireworks[i];
+                f.x += f.dx;
+                f.y += f.dy;
+                f.life--;
+                if (f.life <= 0) {
+                    fireworks.splice(i, 1);
+                }
+            }
+        }
+
+        function drawFireworks() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (const f of fireworks) {
+                ctx.beginPath();
+                ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
+                ctx.fillStyle = f.color;
+                ctx.fill();
+            }
+        }
+
+        function loop() {
+            createFirework();
+            updateFireworks();
+            drawFireworks();
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
