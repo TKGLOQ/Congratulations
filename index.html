@@ -3,95 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Congratulations Priyanka on finishing your Final University exam!!</title>
+    <title>Congratulations Priyanka on finishing
+        your final University Exam!!!</title>
     <style>
-        /* Basic styling */
         body {
             margin: 0;
-            padding: 0;
+            overflow: hidden;
+            background-color: black;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: black;
-            overflow: hidden;
             color: white;
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            flex-direction: column;
         }
         h1 {
-            font-size: 48px;
-            animation: color-change 3s infinite;
+            font-size: 3em;
+            animation: colorChange 3s infinite;
+            margin: 0;
+            padding: 0;
+            width: 100%;
         }
-        /* Animation for changing colors */
-        @keyframes color-change {
+        @keyframes colorChange {
             0% { color: red; }
-            25% { color: orange; }
-            50% { color: yellow; }
-            75% { color: green; }
-            100% { color: blue; }
+            25% { color: yellow; }
+            50% { color: green; }
+            75% { color: blue; }
+            100% { color: red; }
+        }
+        #fireworksCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
         }
     </style>
 </head>
 <body>
-    <h1>Congratulations Person on finishing your exams!</h1>
+    <h1>Congratulations Priyanka on finishing
+        your final University Exam!!!</h1>
     <canvas id="fireworksCanvas"></canvas>
 
     <script>
         // Fireworks animation
         const canvas = document.getElementById('fireworksCanvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
         let fireworks = [];
+        let particles = [];
 
         function random(min, max) {
             return Math.random() * (max - min) + min;
         }
 
-        function createFirework() {
-            let firework = {
-                x: random(0, canvas.width),
-                y: random(0, canvas.height),
-                size: random(2, 4),
-                color: `hsl(${Math.floor(Math.random() * 360)}, 100%, 50%)`,
-                dx: random(-2, 2),
-                dy: random(-2, 2),
-                life: random(50, 100)
-            };
-            fireworks.push(firework);
+        function createFirework(x, y) {
+            fireworks.push({
+                x: x,
+                y: y,
+                dx: random(-3, 3),
+                dy: random(-6, -3),
+                radius: random(3, 6),
+                alpha: 1,
+                fade: random(0.02, 0.05),
+                color: `hsl(${random(0, 360)}, 100%, 50%)`
+            });
         }
 
-        function updateFireworks() {
-            for (let i = fireworks.length - 1; i >= 0; i--) {
-                const f = fireworks[i];
-                f.x += f.dx;
-                f.y += f.dy;
-                f.life--;
-                if (f.life <= 0) {
-                    fireworks.splice(i, 1);
-                }
+        function createParticles(x, y) {
+            for (let i = 0; i < 50; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    dx: random(-5, 5),
+                    dy: random(-5, 5),
+                    radius: random(2, 4),
+                    alpha: 1,
+                    fade: random(0.01, 0.02),
+                    color: `hsl(${random(0, 360)}, 100%, 50%)`
+                });
             }
         }
 
-        function drawFireworks() {
+        function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (const f of fireworks) {
+
+            fireworks.forEach((firework, index) => {
+                firework.x += firework.dx;
+                firework.y += firework.dy;
+                firework.alpha -= firework.fade;
+
+                if (firework.alpha <= 0) {
+                    fireworks.splice(index, 1);
+                    createParticles(firework.x, firework.y);
+                }
+
                 ctx.beginPath();
-                ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
-                ctx.fillStyle = f.color;
+                ctx.arc(firework.x, firework.y, firework.radius, 0, Math.PI * 2);
+                ctx.fillStyle = firework.color;
+                ctx.globalAlpha = firework.alpha;
                 ctx.fill();
-            }
+            });
+
+            particles.forEach((particle, index) => {
+                particle.x += particle.dx;
+                particle.y += particle.dy;
+                particle.alpha -= particle.fade;
+
+                if (particle.alpha <= 0) {
+                    particles.splice(index, 1);
+                }
+
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                ctx.fillStyle = particle.color;
+                ctx.globalAlpha = particle.alpha;
+                ctx.fill();
+            });
+
+            requestAnimationFrame(animate);
         }
 
-        function loop() {
-            createFirework();
-            updateFireworks();
-            drawFireworks();
-            requestAnimationFrame(loop);
-        }
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-        loop();
+        setInterval(() => {
+            createFirework(random(0, canvas.width), canvas.height);
+        }, 1000);
+
+        animate();
 
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
